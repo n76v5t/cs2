@@ -1,187 +1,202 @@
-java c48730-32548, Cyber Security Week-5 
- 
-Lab Overview 
- 
-The learning objective of this lab is to gain first-hand experience on TCP/IP vulnerabilities, as well as 
-attacks against these vulnerabilities. The vulnerabilities in the TCP/IP protocols represent a special genre 
-of vulnerabilities in protocol designs and implementations. They provide an invaluable lesson as to why 
-security should be designed in from the beginning, rather than being added as an afterthought. Moreover, 
-studying these vulnerabilities help students understand the challenges of cyber security and why many 
-cyber security measures are needed. Vulnerabilities of the TCP/IP protocols occur at several layers. This 
-lab is designed to learn them step-by-step. 
- 
-Lab Environment Setup 
- 
-To conduct this lab, we require all the three virtual machines: Server, Client and Attacker. The tools being 
-used for this lab are Wireshark/Tshark, Netwox/Netwag. 
- 
-Netwox/Netwag 
- 
-We need tools to send out network packets of different types and with different contents. We can use 
-Netwag to do that. However, the GUI interface of Netwag makes it difficult for us to automate our process. 
-Therefore, we strongly suggest that you use its command-line version, the Netwox command, which is 
-the underlying command invoked by Netwag. 
- 
-Netwox consists of a suite of tools, each having a specific number. You can run the command as following 
-(the parameters depend on which tool you are using). For some of the tools, you have to run it with the 
-root privilege: 
-➢ netwox  [parameters ...]
- 
-If you are not sure how to set the parameters, you can look at the manual by issuing "netwox  --
-help". You can also learn the parameter settings by running Netwag for each command you execute from the 
-graphic interface, Netwag actually invokes a corresponding Netwox command, and it displays the parameter 
-settings. Therefore, you can simply copy and paste the displayed command. 
- 
-Wireshark Tool. 
- 
-You also need a good network-traffic sniffer tool for this lab. Although Netwox comes with a sniffer, you 
-will find that another tool called Wireshark is a much better sniffer tool. 
- 
-Both Netwox and Wireshark can be downloaded. If you are using our pre-built virtual machine, both tools 
-are already installed. To sniff all the network traffic, both tools need to be run with root privilege. 
- 
-Tshark Tool. 
- 
-It is a terminal based network packet analyzer. You also need a good command line network-traffic sniffer 
-tool for this lab. 
- 
-48730-32548, Cyber Security Week-5 
- 
- The lab is based on documents “SEED Labs” provided by Wenliang Du, Syracuse University 
- 
-Lab Tasks 
- 
-In this lab, you need to conduct attacks on the TCP/IP protocols. You can use the Netwox or Netwag, 
-Wireshark, Tshark tools in the attacks. All the attacks are performed on Linux operating systems. However, 
-you can also conduct the same attack on the other operating system and compare the observations after 
-lab classes. You are supposed to use all the three Virtual Machines for the experiments. 
- 
-To simplify the “guess” of TCP sequence numbers and source port numbers, we assume that attacks are 
-on the same physical network as the victims (Think of where such attacks may happen?). Therefore, you 
-can use sniffer tools to get that information. The following is the list of attacks that need to be 
-implemented and studied in this lab. 
- 
-Before starting the task, disconnect the internet from the Server VM. 
- 
-Task 1: SYN Flooding Attack 
- 
-SYN flood is a form of DoS attack in which attackers send many SYN requests to a victim’s TCP port, but 
-the attackers have no intention to finish the 3-way handshake procedure. Attackers either use spoofed IP 
-address or do not continue the procedure. Through this attack, attackers can flood the victim’s queue that 
-is used for half-opened connections, i.e. the connections that has finished SYN, SYN-ACK, but has not yet 
-got a final ACK back. When this queue is full, the victim cannot take any more connection. Following figure 
-illustrates the attack. 
- 
-48730-32548, Cyber Security Week-5 
- 
- The lab is based on documents “SEED Labs” provided by Wenliang Du, Syracuse University 
- 
-The size of the queue has a system-wide setting. In Linux, you can check the system queue size setting 
-using the following command: 
-➢ sysctl -q net.ipv4.tcp_max_syn_backlog
-You can use command netstat -na to check the usage of the queue, i.e., the number of half opened 
-connection associated with a listening port. 
- 
-For this task, Netwag Tool 76 will be used to conduct the attack, and tshark tool to capture the packets. 
- 
-Steps: 
- 
-1. As S代 写program、Java/c++
-代做程序编程语言YN flood produces a lot of traffic in the VM due to high speed, Wireshark might 
-crash. It is recommended to use “tshark” by entering “sudo tshark” on Terminal of the 
-Client VM. 
- 
-2. Then go to Attacker VM and start Netwag by entering “sudo netwag” on the Terminal. 
-3. Select 76: Synflood. 
-4. Enter the details and click run it. (Screenshot required) 
-5. Observe the captured packets on Client VM. (Screenshot required) 
- 
-Questions: 
- 
-1. Observe the attack and take screenshots of the attack scenario. 
-2. Comment on your observation. 
-3. Categorize this attack in terms of severity and how it is linked to the DoS attack 
-48730-32548, Cyber Security Week-5 
- 
- The lab is based on documents “SEED Labs” provided by Wenliang Du, Syracuse University 
- 
-Task 2: ARP cache poisoning 
- 
-The ARP cache is an important part of the ARP protocol. Once a mapping between a MAC address and an 
-IP address is resolved as the result of executing the ARP protocol, the mapping will be cached. Therefore, 
-there is no need to repeat the ARP protocol if the mapping is already in the cache. However, because the 
-ARP protocol is stateless, the cache can be easily poisoned by maliciously crafted ARP messages. Such an 
-attack is called the ARP cache poisoning attack. 
- 
-Normal Scenario: 
-Attackers may use spoofed ARP messages to trick the victim to accept an invalid MAC-to IP mapping, and 
-store the mapping in its cache. There can be various types of consequences depending on the motives of 
-the attackers. For example, attackers can launch a DoS attack against a victim by associating a non-existent 
-MAC address to the IP address of the victim’s default gateway; attackers can also redirect the traffic to 
-and from the victim to another machine, etc. 
- 
-Attack Scenario: 
-48730-32548, Cyber Security Week-5 
- 
- The lab is based on documents “SEED Labs” provided by Wenliang Du, Syracuse University 
- 5 
- 
-For this task, Netwag Tool 80 is required to conduct the attack, and wireshark tool to capture the packets. 
- 
-HINTS: In this task, you need to demonstrate how the ARP cache poisoning attack work. In Linux we can 
-use the command arp -a to check the current mapping between IP address and MAC address. 
- 
-Steps: 
- 
-1. In Server VM, run “arp -a” on terminal to get the ARP Information (MAC Table). 
-(Screenshot Required) 
-2. Open Netwag on Attacker VM by entering “sudo netwag” on the Terminal. 
-3. Select Tool 80: Periodically Send ARP Replies. 
-4. Add the fake MAC address and IP address and select the interface. (Screenshot 
-Required) 
-5. Click “Run It”. 
-6. Check the MAC Table on Server VM and look for the change in MAC address for IP 
-address provided in the Netwag tool 80. (Screenshot required) 
- 
-Questions: 
-1. Observe the attack and take screenshots of the attack scenario. 
-2. Comment on your observation. 
-3. Briefly describe how you can mitigate this attack. 
- 
-Task 3: ICMP Redirect Attack 
- 
-The ICMP redirect message is used by routers to provide the up-to-date routing information to hosts, 
-which initially have minimal routing information. When a host receives an ICMP redirect message, it will 
-modify its routing table according to the message. 
- 
-Because of the lack of validation, if attackers want the victim to set its routing information in a particular 
-way, they can send spoofed ICMP redirect messages to the victim and trick the victim to modify its routing 
-table. 
- 
-For this task, Netwag Tool 86 is required to conduct the attack, and wireshark tool to capture the packets. 
- 
-HINTS: In this task, you should demonstrate how the ICMP redirect attack works, and describe the 
-observed consequence. To check the routing information in Linux, you can use the command route 
- 
-Steps: 
- 
-1. Open Wireshark on Client VM by entering “sudo wireshark” in the terminal. 
-2. Select the interface and set “icmp” as filter and click “Apply”. 
-3. Open a new terminal on Client VM and ping the server. (Screenshot required) 
-4. Go to Attacker VM, run Netwag using the terminal. 
-5. Select the interface and “spoofip: IP spoof initialization type”. Input the required IP 
-address into “gw: new gateway” and “src-ip: source IP address”. (Screenshot Required) 
-6. Click “Run It”. 
-7. Go back to Client VM, check the Wireshark output. (Screenshot Required) 
-  
-48730-32548, Cyber Security Week-5 
- 
- The lab is based on documents “SEED Labs” provided by Wenliang Du, Syracuse University 
- 
-Questions: 
-1. Observe the attack and take screenshots of the attack scenario. 
-2. Comment on your observation. 
-3. Briefly describe how you can mitigate this attack. 
- 
+java c
+Advanced Funds Management
+Group Assignment
+General Instructions
+a)   This assignment has a maximum group size of 3 students. Students will form. groups in MyUni for the course and submit the assignment through the group. Students who wish to complete the assignment individually must contact the course coordinator (syed.ali@adelaide.edu.au) to seek approval.
+b)   The due date for the assignment is the 1of  October (11:59pm). Each additional working day (does not    include  Saturday,  Sunday,  or  public  holidays)  incurs  a  1.5-mark  (out  of 30)  penalty  which will  be deducted from the total mark for the assignment.  Early assignment submissions by the 16 of  October will receive 3 bonus marks. Late assignments must be submitted by the 27th  October (11:59pm) after which no assignments will be accepted.
+c)   Teams will be expected to access information and data from Refinitiv and Morningstar and create tables and graphs for this report. Students are not allowed to copy and paste tables, graphs, and diagrams from these sources. A penalty of 1 mark (out of 30) per item copied and pasted from these sources will be deducted from the assignment. Please ask for clarifications if unsure about this aspect.
+d)   This assignment is worth 105 marks and is weighted 30% of the total course assessment. A maximum word count for each section is provided. Teams are required to provide a word count for each section to show that the word limit has not been exceeded.
+e)   Students   should   familiarize   themselves   with  the   communication   skills  guide   (attached   in   the Assignment Module). Plagiarism in assignment from any source will be investigated by the Academic Integrity Committee. Students are not allowed to use any translation software, generative AI tools, or translation tools. All references must be read and understood.
+f)    The assignment report should be submitted through AFM Group Assignment (number). This way the whole group can see the comments received. Any extension will also be given for the group and not individual    student.     To     submit     your    assignment,     please     follow     the     instructions     here:
+https://community.canvaslms.com/t5/Student-Guide/How-do-I-submit-an-assignment-on-behalf-of- a-group/ta-p/294#U294
+AFM Assignment Brief
+Sanders ConsultingSanders Consulting services the fund management industry. They specialise in conducting research for US and Australian  Equity and  Bonds funds under  Berk’s theory of fund performance and capital flows.  In addition, Sanders offers fund management cost reduction program, primarily through reduced number of holdings in a fund and reduced churn (number of transactions per annum).
+Dandenong InvestmentsDandenong  Investments’  manages  10,000  retail  investors  provide  financial  advice  as  well  as  recommends managed funds for their  clients.  DI  have  recently  considered  managing  two  popular  in-house  funds  –  US Investment grade corporate  bonds  and  Australian  Large  Cap  equities  and  have  asked  SC  to  provide  their services. Specifically, DI wishes to identify funds with high turnover, high costs, low ranking (below average) BUT with skilled fund managers. DI also requires SC to use the identified funds to “enhance” them such that these funds are not only improve on a net (after costs) basis but also are able to generate abnormal returns (on agross basis (without considering costs) against their respective benchmarks.
+AFM in-training Fund Management TeamSanders  Consulting  has  requested  your  AFM  team  to  provide  the  services  requested  by  Dandenong Investments. Your team will have a specialist in  US  FIS  assets and  US yield curve forecasts; a specialist on forecast of the Australian economy and Australian  Large cap equities; and a specialist equity and  FIS fund analyst. Your team will write a report to address the requirements for Dandenong Investments.
+Executive Summary (2.5% - 250 words max)
+Team will provide an executive summary of the scope of this report and the analyses conducted. Teams also mention limitations of this project.
+Section 1 (5 +10 + 5% = 30% - 1500 words max)
+Your team will identify a US FIS Investment grade Corporate Bond fund and an Australian Large Cap equity, that has (i) and active management style. (LSEG), (ii) ranked below average (below 50 percentile) for the last 5 years (Morningstar), (iii) has above-average net management costs over the last 5 years (LSEG and MorningStar (US and Australia)), (iv) above average turnover (LSEG), and must have at least 50 firms in Equity fund and 100 bonds in the FIS fund.
+Task 1 (5%) Your team will demonstrate that the chosen active funds (one US Investment grade Corporate bond fund and one Australian Equity Large Cap fund) have the desired characteristics in a table below:
+
+Rank
+Management costs
+Turnover
+Fund
+
+
+
+Average
+
+
+
+Task 2 (5 + 5% = 15%) Your team will conduct a top-down analysis of the two funds against their benchmarks over the last 5 years (using monthly data). 3-month T-Bill rate must be used in this analysis. The following measures will be provided and discussed in the table below:
+Fund  name
+Asset Type
+Average Return
+Volatility
+Sharpe Ratio
+Alpha
+Tracking Error
+Information ratio
+Significance of Alpha
+Discussion
+
+US             FIS Investment    Grade
+Corporate
+
+
+
+
+
+
+
+
+
+BM   for    US
+FIS
+Investment Grade
+corporate
+
+
+-
+-
+-
+-
+
+
+Australian
+Large      Cap Equity
+
+
+
+
+
+
+
+
+
+BM           for Australian
+Large      Cap Equity
+
+
+
+
+-
+-
+-
+
+The  discussion  must  focus  on  how  each  fund  has  performed  on  a  historic  basis  against  their  respective benchmarks, and whether the fund manager has displayed skills in managing these funds.Task 3 (10 + 5% = 15%) Your teams will conduct a bottom-up analysis of both funds over two periods. Teams will require to gather returns and other details (sectors for equities and credit ratings/maturity or duration for FIS) over three dates over the last 5 years. All analyses will require a comparison against each fund’s respective benchmarks.
+Equity Funds: Equity fund bottom-up analysis must group firms into 11 sectors, and must be conducted over two periods (months, quarters, half years or years) using the latest data available for this analysis.
+FIS Fund: FIS fund bottom-up analysis must start by grouping FIS assets into credit and maturity (or duration) groups. Bottom-up analysis will be conducted over two periods (months, quarters, half years or years)
+A discussion of fund manager’s skills will summarise the results of the two Bottom-up analyses.
+Section 2 (35% - 1500 words)This section will be conducted by an Equity Analyst tasked with improving the fund’sperformance by (i) reduced turnover, (ii) reduced number of firms in the fund to between 22 and 33, (iii) improved Information ratio, and (iv) improved rankings.
+Task 1 (10%)Your team will  provide  market  forecast  (in terms  of % change from current  market  returns)  months,  and forecasts  for  each  sector  (in  terms  of  %  change  from  current  sector  returns)  using  the  Black  Litterman framework, as well as your own private deviations from BL forecast over the next 6. A discussion on how each sector will perform. in the table below:
+Sector
+6 month returns
+BL Forecasted 6 month returns
+Team Forecasted 6 month returns
+Discussion
+Financials
+
+
+
+
+Materials
+
+
+
+
+
+
+…
+
+
+
+
+…
+
+
+
+
+Technology
+
+
+
+
+Market
+
+
+
+
+Task 2 (15%)
+Your team will identify two firms from each sector that is most mis-priced. Mis-pricing will be identified using  two methodologies: first, using estimates from LSEG’s equity data; and second using the analyst’s proprietary methodology. You will present the information in the table below and also provide a short description of the direction of forecast and difference in opinion between LSEG analysts and your own forecasts.
+Firm
+Sector
+Current allocation
+and position within
+sector
+LSEG
+estimates
+Team
+estimates
+Discussion
+
+
+
+
+
+
+
+Task 3 (10%)Your team will allocate the mispriced firms and a BM ETF to create an enhanced Australian Equity large Cap fund. The newly created fund will have an improved Information ratio (using mispricing for alpha calculations and the historical tracking error) with lower management costs. The new fund will only consist of the identified mispriced firms from Task 2 as well as the BM ETF to provide the exposure to the BM. Teams will allocate the firms and the BM ETF to ensure that (i) the sector allocation will deviate from the BM based on the forecasts in Task 1, and (ii) the firms and the ETF will be allocated through risk allocation.
+A report on the structure of the newly formed equity fund, and its forecasted performance will be provided at the end of this section.
+Section 3 (35% - 1500 words)This section will be conducted by an FIS Analyst tasked with improving the fund’s performance by (i) reduced turnover, (ii) reduced number of bonds in the fund to 60, (iii) improved Information ratio, and (iv) improved rankings.
+Task 1 (10%)Your team will provide yield forecast (in terms of % change from current yield), including forecasts for each of the 10 maturity (in terms of % change from current sector returns). A discussion on the reason for the yield change for each maturity will be presented in the table below:
+Sector
+6-month change
+Team Forecasted 6- month change
+Discussion
+1m
+
+
+
+3m
+
+
+
+…
+
+
+
+1Y
+
+
+
+…
+
+
+
+30Y
+
+
+
+Task 2 (15%)
+Your team will identify three bonds for each credit/maturity or duration that is most mis-priced. You will present  the information in the table below.
+Bond
+Current allocation
+Maturity
+Duration
+Credit rating groups
+
+
+
+
+
+
+Task 3 (10%)Your team will allocate the 60 bonds and a BM ETF to create an enhanced US FIS Investment Grade fund. The newly  created  fund  will  have  an  improved   Information  ratio  (using   historical  tracking  error)  with   lower management costs. The new fund will only consist of the 60 bonds from Task 2 as well as the BM ETF to provide the exposure to the BM. Teams will allocate the bonds and the BM ETF to ensure that (i) the credit/maturity or duration allocation will deviate from the BM based on the forecasts in Task 1, and (ii) the bonds and the ETF will be allocated through an optimization process.
+A report on the structure of the newly formed bond fund, and its forecasted performance will be provided at the end of this section.
+Conclusion (2.5% marks – 250 words)
+A conclusion will detail the work completed in the three sections and the value to SC’s client  Dandenong Investments.
+
          
 加QQ：99515681  WX：codinghelp
